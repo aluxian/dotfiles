@@ -1,6 +1,5 @@
-export CLICOLOR=1 # ls
-export EDITOR=vim # vim
-export GPG_TTY=`tty` # gpg
+export CLICOLOR=1
+export EDITOR=vim
 
 HISTIGNORE="&:ls:[bf]g:exit:reset:clear:cd:cd ..:cd.."
 HISTSIZE=10000 # zsh
@@ -22,14 +21,17 @@ source "${ZAP_DIR}/zap.zsh"
 
 plug "mafredri/zsh-async"
 plug "sindresorhus/pure"
+plug "aluxian/zsh-async-disable-npm-fund"
 plug "aluxian/zsh-async-disable-npm-update-notifier"
 plug "aluxian/zsh-sponge"
 plug "aluxian/zsh-retry"
 plug "aluxian/zsh-trash"
 plug "aluxian/zsh-hushlogin"
 plug "aluxian/zsh-ctrl-x-e"
+plug "aluxian/zsh-ctrl-t" 
 plug "aluxian/zsh-app-cleaner"
 plug "aluxian/zsh-pet"
+plug "aluxian/zsh-gpt"
 plug "Aloxaf/fzf-tab"
 plug "zsh-users/zsh-completions"
 plug "zsh-users/zsh-autosuggestions"
@@ -62,7 +64,6 @@ Plug 'tpope/vim-rhubarb'
 Plug 'tpope/vim-dadbod'
 Plug 'godlygeek/tabular'
 Plug 'preservim/vim-markdown'
-Plug 'nanotee/zoxide.vim'
 call plug#end()
 
 set nocompatible
@@ -148,98 +149,19 @@ if [ ! -f ~/.zshenv ]; then
   cat << 'EOF' > ~/.zshenv
 # DO NOT MODIFY
 
-# https://consoledonottrack.com
-export DO_NOT_TRACK=1
-
-# npm
-export NO_UPDATE_NOTIFIER=1
-export NPM_CONFIG_UPDATE_NOTIFIER=false
-
 # Homebrew
 export HOMEBREW_NO_ANALYTICS=1
 export HOMEBREW_NO_ENV_HINTS=1
-
-# gh
-export GH_NO_UPDATE_NOTIFIER=1
-
-# Gatsby
-export GATSBY_TELEMETRY_DISABLED=1
-
-# Next.js
-export NEXT_TELEMETRY_DISABLED=1
-
-# streamlit
-export STREAMLIT_BROWSER_GATHERUSAGESTATS=false
 
 # Go
 export GOPATH="$HOME/.go"
 export GOBIN="$GOPATH/bin"
 
-# Cargo
-export CARGO_HOME="$HOME/.cargo"
-
 # fzf
 export FZF_DEFAULT_OPTS='--color 16'
-export FZF_DEFAULT_COMMAND='fd --type file --hidden --exclude .git'
-export FZF_DISABLE_KEYBINDINGS=0
-export FZF_LEGACY_KEYBINDINGS=0
-export FZF_PREVIEW_DIR_CMD='ls'
-export FZF_PREVIEW_FILE_CMD='head -n 10'
-export FZF_TMUX_HEIGHT='40%'
-
-# pastel
-export PASTEL_COLOR_MODE=8bit
 EOF
   echo ".zshenv created, restart shell to apply changes"
 fi
-
-function gpt() {
-  echo "$(cat <<EOF
-I am a command line translation tool for Mac. Ask me what you want to do and I will tell you how to do it using a unix command.
-
-Q: copy a file
-cp filename.txt destination_filename.txt
-
-Q: duplicate a folder
-cp -a source_folder/ destination_folder/
-
-Q: convert a .heic file to jpg
-convert source.heic destination.jpg
-
-Q: navigate to my desktop
-cd ~/Desktop/
-
-Q: decompress .tar.gz
-tar -xvf filename.tar.gz
-
-Q: download a file from the internet
-curl -O https://example.com/file.txt
-
-Q: get the source of a webpage
-curl -s http://www.example.com/
-
-Q: convert a .mov to .mp4
-ffmpeg -i source.mov -vcodec h264 -acodec mp2 destination.mp4
-
-Q: say hello world
-echo "hello world"
-
-Q: what does the p stand for in 'cp -Rp'?
-The 'p' stands for 'preserve' and it preserves the original file permissions when copying.
-
-Q: how do you add a comment to a shell script?
-To add a comment make sure the line starts with a #
-
-Q: how do I go to the first line using vim
-The command gg or :1 will go to the first line
-
-Q: what programs are running
-ps -ax
-
-Q:
-EOF
-)""$@" | jq -Rs '{"model": "text-davinci-003", "prompt": ., "temperature": 0, "max_tokens": 100}' | curl -s https://api.openai.com/v1/completions -H "Content-Type: application/json" -H "Authorization: Bearer $OPENAI_API_KEY" -d @- | jq '.choices[0].text' -rc
-}
 
 function ocrmypdf() {
   docker run -i --rm jbarlow83/ocrmypdf --output-type pdfa --pdfa-image-compression jpeg - - <"$1" >"$1.pdf"
@@ -290,3 +212,8 @@ alias kns='kubens'
 alias tf='terraform'
 alias barc='brew autoremove && brew cleanup'
 alias c='cat'
+alias nr='npm run'
+alias ns='npm start'
+alias nt='npm test'
+alias ntw='npm test -- --watch'
+alias npr='npm prune'
