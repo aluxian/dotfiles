@@ -1,0 +1,17 @@
+[advice]
+	statusHints = false
+	addEmptyPathspec = false
+[user]
+	name = Alexandru Rosianu
+	email = me@aluxian.com
+	signingKey = 4F2278A449898F36642A3216D31D323223736BFC
+[core]
+	autocrlf = input
+[pull]
+	ff = only
+[init]
+	defaultBranch = main
+[help]
+	autocorrect = immediate
+[push]
+	autoSetupRemote = true
