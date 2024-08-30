@@ -122,9 +122,6 @@ if [ ! -f ~/.zprofile ]; then
   cat << 'EOF' > ~/.zprofile
 # DO NOT MODIFY
 
-# pipx
-export PATH="$HOME/.local/bin:$PATH"
-
 # Go
 export PATH="$GOBIN:$PATH"
 
@@ -163,13 +160,30 @@ EOF
   echo ".zshenv created, restart shell to apply changes"
 fi
 
-function ocrmypdf() {
-  docker run -i --rm jbarlow83/ocrmypdf --output-type pdfa --pdfa-image-compression jpeg - - <"$1" >"$1.pdf"
-}
+# .config/git/config
+if [ ! -f ~/.config/git/config ]; then
+  cat << 'EOF' > ~/.config/git/config
+[advice]
+	statusHints = false
+	addEmptyPathspec = false
+[user]
+	name = Alexandru Rosianu
+	signingKey = 4F2278A449898F36642A3216D31D323223736BFC
+	email = me@aluxian.com
+[core]
+	autocrlf = input
+[pull]
+	ff = only
+[init]
+	defaultBranch = main
+[help]
+	autocorrect = immediate
+[push]
+	autoSetupRemote = true
+EOF
+  echo ".config/git/config created"
+fi
 
-function tldr() {
-  docker run -it --rm aluxian/tldr --update $@
-}
 
 function async() {
   local job_func_name=$1
@@ -192,18 +206,21 @@ alias ga='git add'
 alias gaa='git add --all'
 alias gb='git branch --sort=-committerdate'
 alias gc='git commit'
+alias gam='git commit --amend'
 alias gcl='git clone'
 alias gco='git checkout'
 alias gd='git diff'
 alias gf='git fetch'
 alias gl='git log'
 alias gm='git merge'
+alias gmff='git merge --ff-only'
 alias gp='git push'
 alias gpl='git pull'
 alias gplr='git pull --rebase'
 alias gpsom='git push --set-upstream origin master'
 alias gpsup='git push --set-upstream origin (git symbolic-ref --short HEAD)'
 alias gs='git status'
+alias gcp='git cherry-pick'
 alias gsh='git show'
 alias gt='git tag'
 alias k='kubectl'
@@ -213,7 +230,12 @@ alias tf='terraform'
 alias barc='brew autoremove && brew cleanup'
 alias c='cat'
 alias nr='npm run'
+alias nl='npm run lint'
 alias ns='npm start'
 alias nt='npm test'
 alias ntw='npm test -- --watch'
 alias npr='npm prune'
+
+bindkey "\e[3~" delete-char # fix Fn+Backspace inside VS Code integrated terminal
+
+export RCLONE_FAST_LIST=1
